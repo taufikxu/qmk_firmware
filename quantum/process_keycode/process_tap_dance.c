@@ -19,66 +19,66 @@
 uint8_t get_oneshot_mods(void);
 #endif
 
-static uint16_t last_td;
-static int16_t  highest_td = -1;
+static uint16_t last_td=0;
+static int16_t  highest_td=-1;
 
-void qk_tap_dance_pair_on_each_tap(qk_tap_dance_state_t *state, void *user_data) {
-    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+// void qk_tap_dance_pair_on_each_tap(qk_tap_dance_state_t *state, void *user_data) {
+//     qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
 
-    if (state->count == 2) {
-        register_code16(pair->kc2);
-        state->finished = true;
-    }
-}
+//     if (state->count == 2) {
+//         register_code16(pair->kc2);
+//         state->finished = true;
+//     }
+// }
 
-void qk_tap_dance_pair_finished(qk_tap_dance_state_t *state, void *user_data) {
-    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+// void qk_tap_dance_pair_finished(qk_tap_dance_state_t *state, void *user_data) {
+//     qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
 
-    if (state->count == 1) {
-        register_code16(pair->kc1);
-    } else if (state->count == 2) {
-        register_code16(pair->kc2);
-    }
-}
+//     if (state->count == 1) {
+//         register_code16(pair->kc1);
+//     } else if (state->count == 2) {
+//         register_code16(pair->kc2);
+//     }
+// }
 
-void qk_tap_dance_pair_reset(qk_tap_dance_state_t *state, void *user_data) {
-    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+// void qk_tap_dance_pair_reset(qk_tap_dance_state_t *state, void *user_data) {
+//     qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
 
-    wait_ms(TAP_CODE_DELAY);
-    if (state->count == 1) {
-        unregister_code16(pair->kc1);
-    } else if (state->count == 2) {
-        unregister_code16(pair->kc2);
-    }
-}
+//     wait_ms(TAP_CODE_DELAY);
+//     if (state->count == 1) {
+//         unregister_code16(pair->kc1);
+//     } else if (state->count == 2) {
+//         unregister_code16(pair->kc2);
+//     }
+// }
 
-void qk_tap_dance_dual_role_on_each_tap(qk_tap_dance_state_t *state, void *user_data) {
-    qk_tap_dance_dual_role_t *pair = (qk_tap_dance_dual_role_t *)user_data;
+// void qk_tap_dance_dual_role_on_each_tap(qk_tap_dance_state_t *state, void *user_data) {
+//     qk_tap_dance_dual_role_t *pair = (qk_tap_dance_dual_role_t *)user_data;
 
-    if (state->count == 2) {
-        layer_move(pair->layer);
-        state->finished = true;
-    }
-}
+//     if (state->count == 2) {
+//         layer_move(pair->layer);
+//         state->finished = true;
+//     }
+// }
 
-void qk_tap_dance_dual_role_finished(qk_tap_dance_state_t *state, void *user_data) {
-    qk_tap_dance_dual_role_t *pair = (qk_tap_dance_dual_role_t *)user_data;
+// void qk_tap_dance_dual_role_finished(qk_tap_dance_state_t *state, void *user_data) {
+//     qk_tap_dance_dual_role_t *pair = (qk_tap_dance_dual_role_t *)user_data;
 
-    if (state->count == 1) {
-        register_code16(pair->kc);
-    } else if (state->count == 2) {
-        pair->layer_function(pair->layer);
-    }
-}
+//     if (state->count == 1) {
+//         register_code16(pair->kc);
+//     } else if (state->count == 2) {
+//         pair->layer_function(pair->layer);
+//     }
+// }
 
-void qk_tap_dance_dual_role_reset(qk_tap_dance_state_t *state, void *user_data) {
-    qk_tap_dance_dual_role_t *pair = (qk_tap_dance_dual_role_t *)user_data;
+// void qk_tap_dance_dual_role_reset(qk_tap_dance_state_t *state, void *user_data) {
+//     qk_tap_dance_dual_role_t *pair = (qk_tap_dance_dual_role_t *)user_data;
 
-    if (state->count == 1) {
-        wait_ms(TAP_CODE_DELAY);
-        unregister_code16(pair->kc);
-    }
-}
+//     if (state->count == 1) {
+//         wait_ms(TAP_CODE_DELAY);
+//         unregister_code16(pair->kc);
+//     }
+// }
 
 static inline void _process_tap_dance_action_fn(qk_tap_dance_state_t *state, void *user_data, qk_tap_dance_user_fn_t fn) {
     if (fn) {
@@ -88,6 +88,10 @@ static inline void _process_tap_dance_action_fn(qk_tap_dance_state_t *state, voi
 
 static inline void process_tap_dance_action_on_each_tap(qk_tap_dance_action_t *action) {
     _process_tap_dance_action_fn(&action->state, action->user_data, action->fn.on_each_tap);
+}
+
+static inline void process_tap_dance_action_on_each_tap_up(qk_tap_dance_action_t *action) {
+    _process_tap_dance_action_fn(&action->state, action->user_data, action->fn.on_each_tap_up);
 }
 
 static inline void process_tap_dance_action_on_dance_finished(qk_tap_dance_action_t *action) {
@@ -112,11 +116,15 @@ void preprocess_tap_dance(uint16_t keycode, keyrecord_t *record) {
     if (!record->event.pressed) return;
 
     if (highest_td == -1) return;
-
+    
+    bool interrupt_others = false;
     for (int i = 0; i <= highest_td; i++) {
         action = &tap_dance_actions[i];
         if (action->state.count) {
-            if (keycode == action->state.keycode && keycode == last_td) continue;
+            if(keycode == last_td && keycode == action->state.keycode) continue;
+            // if(keycode != action->state.keycode) 
+            interrupt_others = true;
+
             action->state.interrupted          = true;
             action->state.interrupting_keycode = keycode;
             process_tap_dance_action_on_dance_finished(action);
@@ -126,6 +134,12 @@ void preprocess_tap_dance(uint16_t keycode, keyrecord_t *record) {
             // modifiers), but these weak mods should not affect the keypress which interrupted the tap dance.
             clear_weak_mods();
         }
+    }
+
+    if (keycode >= QK_TAP_DANCE && keycode <= QK_TAP_DANCE_MAX){
+        int idx = keycode - QK_TAP_DANCE;
+        action = &tap_dance_actions[idx];
+        action->state.interrupt_others = interrupt_others;
     }
 }
 
@@ -137,6 +151,10 @@ bool process_tap_dance(uint16_t keycode, keyrecord_t *record) {
         case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
             if ((int16_t)idx > highest_td) highest_td = idx;
             action = &tap_dance_actions[idx];
+            if (action->state.interrupt_others){
+                action->state.interrupt_others = false;
+                break;
+            }
 
             action->state.pressed = record->event.pressed;
             if (record->event.pressed) {
@@ -156,6 +174,8 @@ bool process_tap_dance(uint16_t keycode, keyrecord_t *record) {
             } else {
                 if (action->state.count && action->state.finished) {
                     reset_tap_dance(&action->state);
+                } else if (action->state.count){
+                    process_tap_dance_action_on_each_tap_up(action);
                 }
             }
 
@@ -167,16 +187,11 @@ bool process_tap_dance(uint16_t keycode, keyrecord_t *record) {
 
 void tap_dance_task() {
     if (highest_td == -1) return;
-    uint16_t tap_user_defined;
 
     for (uint8_t i = 0; i <= highest_td; i++) {
         qk_tap_dance_action_t *action = &tap_dance_actions[i];
-        if (action->custom_tapping_term > 0) {
-            tap_user_defined = action->custom_tapping_term;
-        } else {
-            tap_user_defined = GET_TAPPING_TERM(action->state.keycode, &(keyrecord_t){});
-        }
-        if (action->state.count && timer_elapsed(action->state.timer) > tap_user_defined) {
+        if (action->state.count && (action->state.finished || timer_elapsed(action->state.timer) > TAPPING_TERM)) {
+
             process_tap_dance_action_on_dance_finished(action);
             reset_tap_dance(&action->state);
         }
@@ -196,5 +211,108 @@ void reset_tap_dance(qk_tap_dance_state_t *state) {
     state->interrupted          = false;
     state->finished             = false;
     state->interrupting_keycode = 0;
+    state->interrupt_others     = false;
     last_td                     = 0;
+}
+
+void qk_tap_dance_layer_on_each_tap_layer_layer(qk_tap_dance_state_t *state, void *user_data){
+    // qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+}
+void qk_tap_dance_layer_on_each_tap_layer_key(qk_tap_dance_state_t *state, void *user_data){
+    // qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+}
+void qk_tap_dance_layer_on_each_tap_key_layer(qk_tap_dance_state_t *state, void *user_data){
+    // qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+}
+
+
+
+
+
+void qk_tap_dance_layer_on_each_tap_up_layer_layer(qk_tap_dance_state_t *state, void *user_data){
+    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+
+    if (pair->kc1 > 0){
+        set_oneshot_layer(pair->kc1, ONESHOT_START);
+        clear_oneshot_layer_state(ONESHOT_PRESSED);
+    }
+    state->finished = true;
+}
+void qk_tap_dance_layer_finished_layer_layer(qk_tap_dance_state_t *state, void *user_data){
+    // if (state->finished) return;
+    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+
+    if (state->pressed && pair->kc2 > 0){
+        layer_on(pair->kc2);
+        pair->kc2_on = true;
+    }
+}
+void qk_tap_dance_layer_reset_layer_layer(qk_tap_dance_state_t *state, void *user_data){
+    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+
+    if(pair->kc2_on){
+        if (pair->kc2 > 0) layer_off(pair->kc2);
+        pair->kc2_on = false;
+    }
+}
+
+
+
+void qk_tap_dance_layer_on_each_tap_up_layer_key(qk_tap_dance_state_t *state, void *user_data){
+    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+
+    if (pair->kc1 > 0){
+        set_oneshot_layer(pair->kc1, ONESHOT_START);
+        clear_oneshot_layer_state(ONESHOT_PRESSED);
+    }
+    state->finished = true;
+}
+void qk_tap_dance_layer_finished_layer_key(qk_tap_dance_state_t *state, void *user_data){
+    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+
+    if (state->pressed && pair->kc2 > 0){
+        register_code16(pair->kc2);
+        pair->kc2_on = true;
+    }
+}
+void qk_tap_dance_layer_reset_layer_key(qk_tap_dance_state_t *state, void *user_data){
+    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+
+    if (pair->kc2_on){
+        if (pair->kc2 > 0) unregister_code16(pair->kc2);
+        pair->kc2_on = false;
+    }
+    
+}
+
+
+void qk_tap_dance_layer_on_each_tap_up_key_layer(qk_tap_dance_state_t *state, void *user_data){
+    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+
+    if (pair->kc1 > 0){
+        register_code16(pair->kc1);
+        pair->kc1_on = true;
+    }
+    state->finished = true;
+}
+void qk_tap_dance_layer_finished_key_layer(qk_tap_dance_state_t *state, void *user_data){
+    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+
+    if (state->pressed && pair->kc2 > 0){
+        layer_on(pair->kc2);
+        pair->kc2_on = true;
+    }
+}
+void qk_tap_dance_layer_reset_key_layer(qk_tap_dance_state_t *state, void *user_data){
+    qk_tap_dance_pair_t *pair = (qk_tap_dance_pair_t *)user_data;
+
+    if (pair->kc1_on){
+        if (pair->kc1 > 0) unregister_code16(pair->kc1);
+        pair->kc1_on = false;
+    }
+    if (pair->kc2_on){
+        if (pair->kc2 > 0) layer_off(pair->kc2);
+        pair->kc2_on = false;
+    }
+    
 }
