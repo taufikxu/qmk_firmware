@@ -39,6 +39,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */
 #define DEBOUNCE 5
+#define TAPPING_TERM 300
+
+// #define DYNAMIC_KEYMAP_LAYER_COUNT 5
+// #define TRANSIENT_EEPROM_SIZE 5120
 
 /* NKRO */
 #ifdef NKRO_ENABLE

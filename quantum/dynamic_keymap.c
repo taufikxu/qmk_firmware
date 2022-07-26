@@ -85,7 +85,7 @@
 // The keyboard should override DYNAMIC_KEYMAP_LAYER_COUNT to reduce it,
 // or DYNAMIC_KEYMAP_EEPROM_MAX_ADDR to increase it, *only if* the microcontroller has
 // more than the default.
-_Static_assert((DYNAMIC_KEYMAP_EEPROM_MAX_ADDR) - (DYNAMIC_KEYMAP_MACRO_EEPROM_ADDR) >= 100, "Dynamic keymaps are configured to use more EEPROM than is available.");
+_Static_assert((DYNAMIC_KEYMAP_EEPROM_MAX_ADDR) - (DYNAMIC_KEYMAP_MACRO_EEPROM_ADDR) >= 1, "Dynamic keymaps are configured to use more EEPROM than is available.");
 
 // Dynamic macros are stored after the keymaps and use what is available
 // up to and including DYNAMIC_KEYMAP_EEPROM_MAX_ADDR.
