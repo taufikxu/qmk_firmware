@@ -244,90 +244,90 @@ bool process_record_quantum(keyrecord_t *record) {
 #endif
 
     if (!(
-#if defined(KEY_LOCK_ENABLE)
-            // Must run first to be able to mask key_up events.
-            process_key_lock(&keycode, record) &&
-#endif
-#if defined(DYNAMIC_MACRO_ENABLE) && !defined(DYNAMIC_MACRO_USER_CALL)
-            // Must run asap to ensure all keypresses are recorded.
-            process_dynamic_macro(keycode, record) &&
-#endif
-#if defined(AUDIO_ENABLE) && defined(AUDIO_CLICKY)
-            process_clicky(keycode, record) &&
-#endif
-#ifdef HAPTIC_ENABLE
-            process_haptic(keycode, record) &&
-#endif
+// #if defined(KEY_LOCK_ENABLE)
+//             // Must run first to be able to mask key_up events.
+//             process_key_lock(&keycode, record) &&
+// #endif
+// #if defined(DYNAMIC_MACRO_ENABLE) && !defined(DYNAMIC_MACRO_USER_CALL)
+//             // Must run asap to ensure all keypresses are recorded.
+//             process_dynamic_macro(keycode, record) &&
+// #endif
+// #if defined(AUDIO_ENABLE) && defined(AUDIO_CLICKY)
+//             process_clicky(keycode, record) &&
+// #endif
+// #ifdef HAPTIC_ENABLE
+//             process_haptic(keycode, record) &&
+// #endif
 #if defined(VIA_ENABLE)
             process_record_via(keycode, record) &&
 #endif
             process_record_kb(keycode, record) &&
-#if defined(SECURE_ENABLE)
-            process_secure(keycode, record) &&
-#endif
-#if defined(SEQUENCER_ENABLE)
-            process_sequencer(keycode, record) &&
-#endif
-#if defined(MIDI_ENABLE) && defined(MIDI_ADVANCED)
-            process_midi(keycode, record) &&
-#endif
-#ifdef AUDIO_ENABLE
-            process_audio(keycode, record) &&
-#endif
-#if defined(BACKLIGHT_ENABLE) || defined(LED_MATRIX_ENABLE)
-            process_backlight(keycode, record) &&
-#endif
-#ifdef STENO_ENABLE
-            process_steno(keycode, record) &&
-#endif
-#if (defined(AUDIO_ENABLE) || (defined(MIDI_ENABLE) && defined(MIDI_BASIC))) && !defined(NO_MUSIC_MODE)
-            process_music(keycode, record) &&
-#endif
-#ifdef KEY_OVERRIDE_ENABLE
-            process_key_override(keycode, record) &&
-#endif
+// #if defined(SECURE_ENABLE)
+//             process_secure(keycode, record) &&
+// #endif
+// #if defined(SEQUENCER_ENABLE)
+//             process_sequencer(keycode, record) &&
+// #endif
+// #if defined(MIDI_ENABLE) && defined(MIDI_ADVANCED)
+//             process_midi(keycode, record) &&
+// #endif
+// #ifdef AUDIO_ENABLE
+//             process_audio(keycode, record) &&
+// #endif
+// #if defined(BACKLIGHT_ENABLE) || defined(LED_MATRIX_ENABLE)
+//             process_backlight(keycode, record) &&
+// #endif
+// #ifdef STENO_ENABLE
+//             process_steno(keycode, record) &&
+// #endif
+// #if (defined(AUDIO_ENABLE) || (defined(MIDI_ENABLE) && defined(MIDI_BASIC))) && !defined(NO_MUSIC_MODE)
+//             process_music(keycode, record) &&
+// #endif
+// #ifdef KEY_OVERRIDE_ENABLE
+//             process_key_override(keycode, record) &&
+// #endif
 #ifdef TAP_DANCE_ENABLE
             process_tap_dance(keycode, record) &&
 #endif
-#ifdef CAPS_WORD_ENABLE
-            process_caps_word(keycode, record) &&
-#endif
-#if defined(UNICODE_COMMON_ENABLE)
-            process_unicode_common(keycode, record) &&
-#endif
-#ifdef LEADER_ENABLE
-            process_leader(keycode, record) &&
-#endif
-#ifdef PRINTING_ENABLE
-            process_printer(keycode, record) &&
-#endif
-#ifdef AUTO_SHIFT_ENABLE
-            process_auto_shift(keycode, record) &&
-#endif
-#ifdef DYNAMIC_TAPPING_TERM_ENABLE
-            process_dynamic_tapping_term(keycode, record) &&
-#endif
-#ifdef TERMINAL_ENABLE
-            process_terminal(keycode, record) &&
-#endif
-#ifdef SPACE_CADET_ENABLE
-            process_space_cadet(keycode, record) &&
-#endif
-#ifdef MAGIC_KEYCODE_ENABLE
-            process_magic(keycode, record) &&
-#endif
-#ifdef GRAVE_ESC_ENABLE
-            process_grave_esc(keycode, record) &&
-#endif
-#if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
-            process_rgb(keycode, record) &&
-#endif
-#ifdef JOYSTICK_ENABLE
-            process_joystick(keycode, record) &&
-#endif
-#ifdef PROGRAMMABLE_BUTTON_ENABLE
-            process_programmable_button(keycode, record) &&
-#endif
+// #ifdef CAPS_WORD_ENABLE
+//             process_caps_word(keycode, record) &&
+// #endif
+// #if defined(UNICODE_COMMON_ENABLE)
+//             process_unicode_common(keycode, record) &&
+// #endif
+// #ifdef LEADER_ENABLE
+//             process_leader(keycode, record) &&
+// #endif
+// #ifdef PRINTING_ENABLE
+//             process_printer(keycode, record) &&
+// #endif
+// #ifdef AUTO_SHIFT_ENABLE
+//             process_auto_shift(keycode, record) &&
+// #endif
+// #ifdef DYNAMIC_TAPPING_TERM_ENABLE
+//             process_dynamic_tapping_term(keycode, record) &&
+// #endif
+// #ifdef TERMINAL_ENABLE
+//             process_terminal(keycode, record) &&
+// #endif
+// #ifdef SPACE_CADET_ENABLE
+//             process_space_cadet(keycode, record) &&
+// #endif
+// #ifdef MAGIC_KEYCODE_ENABLE
+//             process_magic(keycode, record) &&
+// #endif
+// #ifdef GRAVE_ESC_ENABLE
+//             process_grave_esc(keycode, record) &&
+// #endif
+// #if defined(RGBLIGHT_ENABLE) || defined(RGB_MATRIX_ENABLE)
+//             process_rgb(keycode, record) &&
+// #endif
+// #ifdef JOYSTICK_ENABLE
+//             process_joystick(keycode, record) &&
+// #endif
+// #ifdef PROGRAMMABLE_BUTTON_ENABLE
+//             process_programmable_button(keycode, record) &&
+// #endif
             true)) {
         return false;
     }
@@ -342,15 +342,15 @@ bool process_record_quantum(keyrecord_t *record) {
                 soft_reset_keyboard();
                 return false;
 #endif
-#ifndef NO_DEBUG
-            case QK_DEBUG_TOGGLE:
-                debug_enable ^= 1;
-                if (debug_enable) {
-                    print("DEBUG: enabled.\n");
-                } else {
-                    print("DEBUG: disabled.\n");
-                }
-#endif
+// #ifndef NO_DEBUG
+//             case QK_DEBUG_TOGGLE:
+//                 debug_enable ^= 1;
+//                 if (debug_enable) {
+//                     print("DEBUG: enabled.\n");
+//                 } else {
+//                     print("DEBUG: disabled.\n");
+//                 }
+// #endif
                 return false;
             case QK_CLEAR_EEPROM:
                 eeconfig_init();
@@ -374,37 +374,37 @@ bool process_record_quantum(keyrecord_t *record) {
                 set_output(OUTPUT_BLUETOOTH);
                 return false;
 #endif
-#ifndef NO_ACTION_ONESHOT
-            case ONESHOT_TOGGLE:
-                oneshot_toggle();
-                break;
-            case ONESHOT_ENABLE:
-                oneshot_enable();
-                break;
-            case ONESHOT_DISABLE:
-                oneshot_disable();
-                break;
-#endif
-#ifdef ENABLE_COMPILE_KEYCODE
-            case QK_MAKE: // Compiles the firmware, and adds the flash command based on keyboard bootloader
-            {
-#    ifdef NO_ACTION_ONESHOT
-                const uint8_t temp_mod = mod_config(get_mods());
-#    else
-                const uint8_t temp_mod = mod_config(get_mods() | get_oneshot_mods());
-                clear_oneshot_mods();
-#    endif
-                clear_mods();
+// #ifndef NO_ACTION_ONESHOT
+//             case ONESHOT_TOGGLE:
+//                 oneshot_toggle();
+//                 break;
+//             case ONESHOT_ENABLE:
+//                 oneshot_enable();
+//                 break;
+//             case ONESHOT_DISABLE:
+//                 oneshot_disable();
+//                 break;
+// #endif
+// #ifdef ENABLE_COMPILE_KEYCODE
+//             case QK_MAKE: // Compiles the firmware, and adds the flash command based on keyboard bootloader
+//             {
+// #    ifdef NO_ACTION_ONESHOT
+//                 const uint8_t temp_mod = mod_config(get_mods());
+// #    else
+//                 const uint8_t temp_mod = mod_config(get_mods() | get_oneshot_mods());
+//                 clear_oneshot_mods();
+// #    endif
+//                 clear_mods();
 
-                SEND_STRING_DELAY("qmk", TAP_CODE_DELAY);
-                if (temp_mod & MOD_MASK_SHIFT) { // if shift is held, flash rather than compile
-                    SEND_STRING_DELAY(" flash ", TAP_CODE_DELAY);
-                } else {
-                    SEND_STRING_DELAY(" compile ", TAP_CODE_DELAY);
-                }
-                SEND_STRING_DELAY("-kb " QMK_KEYBOARD " -km " QMK_KEYMAP SS_TAP(X_ENTER), TAP_CODE_DELAY);
-            }
-#endif
+//                 SEND_STRING_DELAY("qmk", TAP_CODE_DELAY);
+//                 if (temp_mod & MOD_MASK_SHIFT) { // if shift is held, flash rather than compile
+//                     SEND_STRING_DELAY(" flash ", TAP_CODE_DELAY);
+//                 } else {
+//                     SEND_STRING_DELAY(" compile ", TAP_CODE_DELAY);
+//                 }
+//                 SEND_STRING_DELAY("-kb " QMK_KEYBOARD " -km " QMK_KEYMAP SS_TAP(X_ENTER), TAP_CODE_DELAY);
+//             }
+// #endif
         }
     }
 
